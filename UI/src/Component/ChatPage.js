@@ -10,17 +10,16 @@ const ChatPage = () => {
 
   const handleSendMessage = async () => {
     if (newMessage.trim() === "") return;
-
+    const axiosInstance = axios.create({
+      baseURL: 'http://localhost:8000', // Change the port as needed
+    });
     const updatedMessages = [...messages, { text: newMessage, sender: "user" }];
     setMessages(updatedMessages);
     setNewMessage("");
     setMessages([...updatedMessages, { text: "Typing...", sender: "server" }]);
     scrollToTop();
-
     try {
-      const formData = new FormData();
-      formData.append("chatMessage", newMessage);
-      const response = await axios.post("/api/chat", formData);
+      const response = await axiosInstance(`/chatbot?ques=${encodeURIComponent(newMessage)}`);
       const serverResponse = { text: response.data, sender: "server" };
       setMessages([...updatedMessages, serverResponse]);
     } catch (error) {
@@ -58,14 +57,14 @@ const ChatPage = () => {
   };
 
   return (
-    <section className="bg-light w-100 vh-100 m-0">
-      <div className="w-100 vh-100">
+    <section className="w-100 vh-100 m-0">
+      <div className="container w-100 vh-100">
         <div className="w-100 h-100">
-          <div className="w-100 h-100 col-md-8 col-lg-6 col-xl-4">
-            <div className="card w-100 h-100 d-flex">
+          <div className="w-100 h-100 ">
+            <div className="w-100 h-100 border-start border-end position-relative">
               <div
-                className="card-header d-flex align-items-center p-2  text-white border-bottom-0"
-                style={{ background: "#7F00FF", height: "5vh" }}
+                className="w-100 d-flex align-items-center top-0 p-2 text-white"
+                style={{ background: "#7F00FF", height: "8%" }}
               >
                 <div className="w-100 text-center">
                   <p className="mb-0 fw-bold ">FirstAid ChatBot</p>
@@ -73,12 +72,12 @@ const ChatPage = () => {
               </div>
               <div
                 className="w-100 d-flex flex-row justify-content-between"
-                style={{ height: "95vh" }}
+                style={{ height: "84%" }}
               >
                 <div className="w-100 h-100">
                   <div
                     className="card p-5 w-100 border-0"
-                    style={{ overflowY: "scroll", height: "92%" }}
+                    style={{ overflowY: "scroll", height: "100%" }}
                     ref={chatContainerRef}
                   >
                     {messages.map((message, index) => (
@@ -140,34 +139,41 @@ const ChatPage = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="w-100 border rounded-pill">
-                    <div className="w-100 d-flex">
-                        <input
-                          type="text"
-                          style={{
-                            resize: "none",
-                            outline: "none",
-                            width: "95%",
-                          }}
-                          className=" border-0 ps-3 py-3  ms-3 bg-transparent "
-                          id="text"
-                          value={newMessage}
-                          onChange={(e) => setNewMessage(e.target.value)}
-                          onKeyDown={(e) => handleKeyDown(e)}
-                          placeholder="Type your message..."
-                        ></input>
-                        <div>
-                          <button
-                            className="btn mt-2 px-3 me-3 text-white"
-                            style={{ backgroundColor: "#7F00FF" }}
-                            onClick={handleSendMessage}
-                          >
-                            Send
-                          </button>
-                        </div>
-                    </div>
-                  </div>
                 </div>
+              </div>
+              <div
+                style={{ background: "#7F00FF", height: "8%" }}
+                className="w-100 position-absolute bottom-0 d-flex align-items-center"
+              >
+                <div className="w-75 mx-auto d-flex align-items-center h-75">
+                  <div className="w-100 h-100 d-flex align-items-center rounded-pill bg-light">
+                    <input
+                      type="text"
+                      style={{
+                        resize: "none",
+                        outline: "none",
+                        width: "95%",
+                      }}
+                      className=" border-0 ps-3 ms-3 bg-transparent "
+                      id="text"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e)}
+                      placeholder="Type your message..."
+                    ></input>
+                    
+                  </div>
+                  <div>
+                      <button
+                        className="btn px-3 fs-5 text-white"
+                        
+                        onClick={handleSendMessage}
+                      >
+                        Send
+                      </button>
+                    </div>
+                </div>
+                
               </div>
             </div>
           </div>
